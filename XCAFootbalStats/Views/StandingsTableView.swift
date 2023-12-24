@@ -13,7 +13,7 @@ import XCAFootballDataClient
 struct StandingsTableView: View {
     
     let competition: Competition
-    var vm = StandingsTableObservable()
+   @Bindable var vm = StandingsTableObservable()
     let cellWidth: CGFloat = 50
     
     var body: some View {
@@ -115,10 +115,20 @@ struct StandingsTableView: View {
             }
         }
             .foregroundStyle(Color.primary)
-            .navigationTitle(competition.name)
-            .task {
+            .navigationTitle(competition.name + " standings")
+            .task(id: vm.selectedFilter.id) {
                 await vm.fetchStandings(competition: competition)
             }
+            .toolbar {
+                ToolbarItem(placement: .bottomOrnament) {
+                    Picker("Filter Options", selection: $vm.selectedFilter){
+                        ForEach(vm.filterOptions, id: \.self){ season in
+                            Text(" \(season.text)")
+                        }
+                    }.pickerStyle(.segmented)
+                }
+            }
+        
     }
 }
 
